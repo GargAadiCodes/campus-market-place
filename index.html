@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Campus Marketplace | Student Buy & Sell</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --card-bg: #111827;
+      --card-border: #1f2937;
+      --accent: #6366f1;
+      --accent-hover: #4f46e5;
+      --accent-light: rgba(99, 102, 241, 0.15);
+      --success: #10b981;
+      --success-light: rgba(16, 185, 129, 0.15);
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --text: #f9fafb;
+      --text-muted: #9ca3af;
+      --text-dim: #6b7280;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      padding-bottom: 40px;
+    }
+
+    header {
+      background: rgba(17, 24, 39, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--card-border);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      padding: 16px 24px;
+    }
+
+    .header-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .logo-area h1 {
+      font-size: 1.4rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #818cf8, #c084fc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .logo-area p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .btn {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: background 0.2s;
+    }
+    .btn:hover { background: var(--accent-hover); }
+
+    main {
+      max-width: 1200px;
+      margin: 24px auto;
+      padding: 0 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* Controls & Filter Bar */
+    .controls-bar {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 16px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .search-box {
+      flex: 1;
+      min-width: 240px;
+      background: #182232;
+      border: 1px solid var(--card-border);
+      padding: 10px 14px;
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 0.95rem;
+    }
+    .search-box:focus { outline: none; border-color: var(--accent); }
+
+    .category-chips {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+    }
+
+    .chip {
+      background: #182232;
+      border: 1px solid var(--card-border);
+      color: var(--text-muted);
+      padding: 8px 14px;
+      border-radius: 9999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .chip.active {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
+
+    /* Listing Grid */
+    .listings-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+    @media(min-width: 600px) {
+      .listings-grid { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+    }
+
+    .item-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+    }
+
+    .item-img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      background: #1e293b;
+    }
+
+    .item-badge {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: rgba(17, 24, 39, 0.85);
+      backdrop-filter: blur(4px);
+      color: var(--text);
+    }
+
+    .item-details {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .item-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+    }
+
+    .item-price {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--success);
+    }
+
+    .item-meta {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .item-contact-btn {
+      width: 100%;
+      background: #182232;
+      border: 1px solid var(--card-border);
+      color: var(--text);
+      padding: 8px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+    .item-contact-btn:hover { background: #242f42; }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.7);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+    .modal {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      padding: 24px;
+      border-radius: 16px;
+      width: 90%;
+      max-width: 480px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 14px;
+    }
+    .form-group label { font-size: 0.85rem; color: var(--text-muted); }
+    .form-group input, .form-group select, .form-group textarea {
+      background: #182232;
+      border: 1px solid var(--card-border);
+      padding: 10px;
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 0.95rem;
+      font-family: inherit;
+    }
+    .form-group textarea { resize: vertical; min-height: 80px; }
+
+    footer {
+      text-align: center;
+      color: var(--text-dim);
+      font-size: 0.8rem;
+      margin-top: 40px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-container">
+      <div class="logo-area">
+        <h1>Campus Marketplace</h1>
+        <p>Buy, sell, and exchange used books, stationery, and campus essentials.</p>
+      </div>
+      <button class="btn" onclick="openModal()">+ List an Item</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- Controls & Search -->
+    <div class="controls-bar">
+      <input type="text" id="searchInput" class="search-box" placeholder="Search books, calculators, lab coats..." oninput="renderListings()">
+      <div class="category-chips">
+        <button class="chip active" onclick="filterCategory('All', this)">All Items</button>
+        <button class="chip" onclick="filterCategory('Textbooks', this)">Textbooks</button>
+        <button class="chip" onclick="filterCategory('Stationery', this)">Stationery</button>
+        <button class="chip" onclick="filterCategory('Electronics', this)">Electronics</button>
+        <button class="chip" onclick="filterCategory('Lab Gear', this)">Lab Gear</button>
+      </div>
+    </div>
+
+    <!-- Listings Grid -->
+    <div class="listings-grid" id="listingsGrid"></div>
+  </main>
+
+  <!-- Upload Modal -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+      <h3 style="margin-bottom: 16px;">List Item for Sale / Exchange</h3>
+      <div class="form-group">
+        <label>Title</label>
+        <input type="text" id="itemTitle" placeholder="e.g. Engineering Mathematics 4th Ed">
+      </div>
+      <div class="form-group">
+        <label>Category</label>
+        <select id="itemCategory">
+          <option value="Textbooks">Textbooks</option>
+          <option value="Stationery">Stationery</option>
+          <option value="Electronics">Electronics</option>
+          <option value="Lab Gear">Lab Gear</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Price ($ or Exchange)</label>
+        <input type="text" id="itemPrice" placeholder="e.g. $15 or Exchange for CS book">
+      </div>
+      <div class="form-group">
+        <label>Contact Info (Email/Phone/Room)</label>
+        <input type="text" id="itemContact" placeholder="e.g. alex@campus.edu or Room 304">
+      </div>
+      <div class="form-group">
+        <label>Description</label>
+        <textarea id="itemDesc" placeholder="Condition, edition, pickup details..."></textarea>
+      </div>
+      <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px;">
+        <button class="btn" style="background: rgba(239, 68, 68, 0.2); color: #f87171;" onclick="closeModal()">Cancel</button>
+        <button class="btn" onclick="saveItem()">Post Listing</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>Campus Marketplace &copy; 2026. Data auto-saved in your browser.</p>
+  </footer>
+
+  <script>
+    let activeCategory = 'All';
+
+    let items = JSON.parse(localStorage.getItem('campus_marketplace_items')) || [
+      {
+        id: 1,
+        title: "Calculus: Early Transcendentals",
+        category: "Textbooks",
+        price: "$25",
+        contact: "john@campus.edu",
+        desc: "8th Edition. Slightly highlighted, overall great condition.",
+        image: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400&auto=format&fit=crop&q=80"
+      },
+      {
+        id: 2,
+        title: "Casio Scientific Calculator FX-991EX",
+        category: "Electronics",
+        price: "$18",
+        contact: "sarah@campus.edu",
+        desc: "Works perfectly. Solar powered with protective cover.",
+        image: "https://images.unsplash.com/photo-1611125832047-1d7ad1e8e48b?w=400&auto=format&fit=crop&q=80"
+      },
+      {
+        id: 3,
+        title: "Chemistry Lab Coat & Safety Goggles",
+        category: "Lab Gear",
+        price: "$12",
+        contact: "mike@campus.edu",
+        desc: "Size Medium. Clean, washed, no stains.",
+        image: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=400&auto=format&fit=crop&q=80"
+      }
+    ];
+
+    function filterCategory(cat, btn) {
+      activeCategory = cat;
+      document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+      renderListings();
+    }
+
+    function renderListings() {
+      const search = document.getElementById('searchInput').value.toLowerCase();
+      const grid = document.getElementById('listingsGrid');
+      grid.innerHTML = '';
+
+      const filtered = items.filter(item => {
+        const matchesCat = activeCategory === 'All' || item.category === activeCategory;
+        const matchesSearch = item.title.toLowerCase().includes(search) || item.desc.toLowerCase().includes(search);
+        return matchesCat && matchesSearch;
+      });
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px;">No listings found. Be the first to post one!</div>`;
+        return;
+      }
+
+      filtered.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'item-card';
+        card.innerHTML = `
+          <div>
+            <span class="item-badge">${item.category}</span>
+            <img class="item-img" src="${item.image || 'https://images.unsplash.com/photo-1512820790803-83ca734da794?w=400&auto=format&fit=crop&q=80'}" alt="${item.title}">
+            <div class="item-details">
+              <div class="item-title">${item.title}</div>
+              <div class="item-price">${item.price}</div>
+              <p style="font-size: 0.85rem; color: var(--text-muted);">${item.desc}</p>
+            </div>
+          </div>
+          <div style="padding: 0 16px 16px 16px;">
+            <button class="item-contact-btn" onclick="alert('Seller Contact: ' + '${item.contact}')">Contact Seller</button>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function openModal() {
+      document.getElementById('modalOverlay').style.display = 'flex';
+    }
+
+    function closeModal() {
+      document.getElementById('modalOverlay').style.display = 'none';
+    }
+
+    function saveItem() {
+      const title = document.getElementById('itemTitle').value.trim();
+      const category = document.getElementById('itemCategory').value;
+      const price = document.getElementById('itemPrice').value.trim();
+      const contact = document.getElementById('itemContact').value.trim();
+      const desc = document.getElementById('itemDesc').value.trim();
+
+      if (!title || !price || !contact) {
+        alert('Please fill out Title, Price, and Contact Info.');
+        return;
+      }
+
+      items.unshift({
+        id: Date.now(),
+        title,
+        category,
+        price,
+        contact,
+        desc,
+        image: "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=400&auto=format&fit=crop&q=80"
+      });
+
+      localStorage.setItem('campus_marketplace_items', JSON.stringify(items));
+      closeModal();
+      renderListings();
+
+      // Clear inputs
+      document.getElementById('itemTitle').value = '';
+      document.getElementById('itemPrice').value = '';
+      document.getElementById('itemContact').value = '';
+      document.getElementById('itemDesc').value = '';
+    }
+
+    renderListings();
+  </script>
+</body>
+</html>
